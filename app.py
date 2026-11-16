@@ -36,7 +36,7 @@ st.markdown(
 <style>
   :root {{ --azul:{AZUL}; --verde:{VERDE}; --ouro:{OURO}; --borda:#E0E6ED; --texto:#1F2A37; --suave:#5B6B7F; }}
   .stApp {{ background:#F4F6F9; }}
-  .block-container {{ padding-top:1.4rem; padding-bottom:2rem; max-width:1500px; }}
+  .block-container {{ padding-top:3.6rem; padding-bottom:2rem; max-width:1500px; }}
   [data-testid="stSidebar"] {{ background:#FFFFFF; border-right:1px solid var(--borda); }}
   [data-testid="stSidebar"] h2 {{ color:var(--azul); font-size:1.05rem; }}
   .vr-header {{ background:linear-gradient(100deg,{AZUL} 0%,#0A5C9E 70%,#0E6AAF 100%);
