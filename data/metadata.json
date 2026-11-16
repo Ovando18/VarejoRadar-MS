@@ -1,7 +1,7 @@
 {
   "fonte": "Receita Federal do Brasil — Dados Abertos do CNPJ",
   "mes_referencia": "2026-10",
-  "gerado_em": "2026-11-16T10:18:51",
+  "gerado_em": "2026-11-16T13:12:50",
   "registros": 13684,
   "municipios_com_registros": 79,
   "por_segmento": {
@@ -15,7 +15,9 @@
     "Secundário": 6823
   },
   "precisao_geo": {
-    "Centroide do município": 13684
+    "Logradouro": 10685,
+    "Centroide do município": 1638,
+    "Bairro": 1361
   },
   "com_telefone": 13142,
   "com_email": 11542

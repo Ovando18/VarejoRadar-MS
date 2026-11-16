@@ -5,7 +5,14 @@ supermercados, hipermercados, minimercados e atacadistas dos **79 municípios de
 Mato Grosso do Sul**, construído com Streamlit + Folium sobre a base oficial de
 CNPJs ativos da Receita Federal.
 
-<!-- STATS -->
+> **Base atual (RFB, referência 10/2026):** 13.684 estabelecimentos ativos nos
+> 79 municípios — 115 hipermercados, 1.291 supermercados, 1.524 atacadistas /
+> atacarejos e 10.754 minimercados / mercearias (6.861 pelo CNAE principal e
+> 6.823 apenas pelo secundário). 96% com telefone e 84% com e-mail.
+> Geolocalização: **78% por logradouro**, 10% por bairro e 12% no centroide do
+> município.
+>
+> 🌐 **Demo:** https://varejoradar-ms.streamlit.app/
 
 ## Funcionalidades
 
