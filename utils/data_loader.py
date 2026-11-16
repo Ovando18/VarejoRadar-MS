@@ -47,7 +47,7 @@ def normalizar(txt: str) -> str:
 
 
 @st.cache_data(show_spinner="Carregando base de estabelecimentos…")
-def carregar_dados(_mtime: float | None = None) -> pd.DataFrame:
+def carregar_dados(mtime: float | None = None) -> pd.DataFrame:
     """Lê o parquet e pré-computa colunas auxiliares (cacheado por mtime do arquivo)."""
     df = pd.read_parquet(PARQUET_PATH)
     for c in ["telefone_1", "telefone_2", "email", "bairro", "complemento", "numero"]:
@@ -67,7 +67,7 @@ def dados() -> pd.DataFrame:
 
 
 @st.cache_data
-def carregar_metadata(_mtime: float | None = None) -> dict:
+def carregar_metadata(mtime: float | None = None) -> dict:
     if METADATA_PATH.exists():
         return json.loads(METADATA_PATH.read_text(encoding="utf-8"))
     return {}
