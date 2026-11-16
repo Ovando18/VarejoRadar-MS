@@ -1,0 +1,7 @@
+streamlit>=1.46,<2
+pandas>=2.2
+pyarrow>=16
+folium>=0.17
+streamlit-folium>=0.22
+xlsxwriter>=3.2
+requests>=2.32

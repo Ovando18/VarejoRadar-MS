@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Dados brutos da RFB (GBs) e caches de ETL
+data/raw/
+*.parts.json
+
+# Streamlit
+.streamlit/secrets.toml
+
+# SO / IDE
+.DS_Store
+.idea/
+.vscode/
