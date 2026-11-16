@@ -368,6 +368,14 @@ with col_mapa:
     mapa = construir_mapa(pontos[colunas_mapa].reset_index(drop=True))
     retorno = st_folium(mapa, height=580, width=None,
                         returned_objects=["last_object_clicked"], key="mapa_ms")
+    if len(pontos):
+        prec = pontos["precisao_geo"].astype(str).value_counts(normalize=True)
+        st.caption(
+            "Precisão da localização — "
+            + " · ".join(f"{nivel}: {prec.get(nivel, 0):.0%}"
+                         for nivel in ["Logradouro", "Bairro", "Centroide do município"])
+            + ". Pontos aproximados recebem um pequeno deslocamento para não se sobreporem."
+        )
 
 selecionado = None
 clique = (retorno or {}).get("last_object_clicked")

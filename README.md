@@ -35,8 +35,10 @@ CNPJs ativos da Receita Federal.
 | Filtro | `UF = MS`, situação cadastral **02 – ATIVA**, CNAE principal **ou** secundário em: 4711-3/01, 4711-3/02, 4712-1/00, 4639-7/01, 4639-7/02, 4691-5/00 |
 | Enriquecimento | Razão social e porte (arquivos Empresas) |
 | Município | Código SIAFI da RFB ↔ IBGE + centroide ([kelvins/municipios-brasileiros](https://github.com/kelvins/municipios-brasileiros)); validação dos 79 municípios |
-| Geocodificação | CEP → coordenadas via [BrasilAPI CEP v2](https://brasilapi.com.br/docs#tag/CEP-V2) (cache em `data/geocache_cep.json`). Coordenadas são aceitas só se caírem em MS e a ≤ 120 km do centroide do município; caso contrário, usa-se o **centroide do município + jitter determinístico** (hash do CNPJ, raio 2 km). A coluna `precisao_geo` indica a origem. |
+| Geocodificação | [Nominatim / OpenStreetMap](https://nominatim.org/) respeitando a política de uso (1 req/s), com cache incremental em `data/geocache_nominatim.json`. Hierarquia: **logradouro** (≤ 60 km da sede) → **bairro** (≤ 40 km) → **centroide do município**, sempre com jitter determinístico pelo hash do CNPJ (120 m / 350 m / 1,5 km) para os pontos não se sobreporem. A coluna `precisao_geo` indica o nível. Todos os registros recebem coordenada dentro de MS. |
 | Saída | `data/estabelecimentos_ms.parquet` (zstd) + `data/metadata.json` |
+
+> **Por que não geocodificar por CEP?** A BrasilAPI CEP v2 foi testada: para ~99% dos CEPs de MS ela devolve a mesma coordenada genérica (centro de Campo Grande), o que empilharia os pontos. Por isso o pipeline usa logradouro/bairro via OSM.
 
 ### Classificação de segmento
 
@@ -69,7 +71,7 @@ VarejoRadar-MS/
 ├── data/
 │   ├── estabelecimentos_ms.parquet
 │   ├── metadata.json          # mês de referência, contagens
-│   └── geocache_cep.json      # cache CEP → coordenadas
+│   └── geocache_nominatim.json  # cache logradouro/bairro → coordenadas
 ├── scripts/fetch_data.py      # ETL completo
 ├── utils/
 │   ├── data_loader.py         # carga cacheada + filtros
@@ -96,16 +98,20 @@ streamlit run app.py
 
 ### Atualizar a base (mensal)
 
-A RFB publica uma nova extração por mês. O ETL baixa ~6,4 GB (arquivos brutos
-apagados ao final), leva ~10–20 min e reaproveita o cache de CEPs:
+A RFB publica uma nova extração por mês. O ETL baixa ~6,4 GB em paralelo
+(~7 min a 16 MB/s; brutos apagados ao final), filtra em ~7 min e reaproveita o
+cache de geocodificação — só endereços novos são consultados. A primeira
+geocodificação completa (~9,3 mil bairros/logradouros a 1 req/s) leva ~2,5 h;
+use `--geo-budget-min` para limitar e completar em execuções seguintes:
 
 ```bash
 python scripts/fetch_data.py
 ```
 
 Opções: `--mes AAAA-MM`, `--keep-raw`, `--skip-download` (reprocessa brutos já
-baixados), `--no-geocode`. Variáveis: `VR_DOWNLOAD_WORKERS` (padrão 16),
-`VR_GEOCODE_WORKERS` (padrão 6).
+baixados, usando o resultado filtrado intermediário se existir),
+`--no-geocode` (usa só o cache), `--geo-budget-min N`. Variável:
+`VR_DOWNLOAD_WORKERS` (conexões paralelas, padrão 16).
 
 ### Testes
 
@@ -128,4 +134,8 @@ pip install pytest openpyxl && python -m pytest -q
   estar desatualizados. O uso para prospecção deve observar a **LGPD**
   (Lei 13.709/2018) — em especial para empresários individuais (MEI/EI), cujos
   dados de contato podem ser pessoais.
-- Pontos com `precisao_geo = "Centroide do município"` têm posição aproximada.
+- Pontos com `precisao_geo = "Centroide do município"` ou `"Bairro"` têm posição
+  aproximada; o link do Google Maps nesses casos busca pelo endereço textual.
+- A classificação segue o CNAE declarado à RFB. Ex.: as lojas Assaí estão
+  cadastradas como 4711-3/01 (hipermercado), não como atacadista.
+- Geocodificação © colaboradores do OpenStreetMap (ODbL). Tiles do mapa © Esri.
